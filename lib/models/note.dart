@@ -1,0 +1,88 @@
+import 'package:hive/hive.dart';
+import 'note_type.dart';
+
+part 'note.g.dart';
+
+/// 메모 모델
+///
+/// Hive 데이터베이스에 저장되는 메인 엔티티
+@HiveType(typeId: 1)
+class Note extends HiveObject {
+  /// 고유 ID (UUID)
+  @HiveField(0)
+  String id;
+
+  /// 제목 (평문 - 검색 가능)
+  @HiveField(1)
+  String title;
+
+  /// 메모 타입 (일반, 계정, 카드)
+  @HiveField(2)
+  NoteType type;
+
+  /// 암호화된 내용 (Base64)
+  @HiveField(3)
+  String encryptedContent;
+
+  /// 초기화 벡터 (IV, Base64)
+  @HiveField(4)
+  String iv;
+
+  /// 인증 태그 (AuthTag, Base64)
+  @HiveField(5)
+  String authTag;
+
+  /// 생성 일시
+  @HiveField(6)
+  DateTime createdAt;
+
+  /// 수정 일시
+  @HiveField(7)
+  DateTime updatedAt;
+
+  /// 즐겨찾기 여부
+  @HiveField(8)
+  bool isFavorite;
+
+  Note({
+    required this.id,
+    required this.title,
+    required this.type,
+    required this.encryptedContent,
+    required this.iv,
+    required this.authTag,
+    required this.createdAt,
+    required this.updatedAt,
+    this.isFavorite = false,
+  });
+
+  /// 복사본 생성 (일부 필드 변경)
+  Note copyWith({
+    String? id,
+    String? title,
+    NoteType? type,
+    String? encryptedContent,
+    String? iv,
+    String? authTag,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    bool? isFavorite,
+  }) {
+    return Note(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      type: type ?? this.type,
+      encryptedContent: encryptedContent ?? this.encryptedContent,
+      iv: iv ?? this.iv,
+      authTag: authTag ?? this.authTag,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      isFavorite: isFavorite ?? this.isFavorite,
+    );
+  }
+
+  @override
+  String toString() {
+    return 'Note(id: $id, title: $title, type: $type, createdAt: $createdAt)';
+  }
+}
