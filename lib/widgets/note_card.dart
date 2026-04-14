@@ -25,8 +25,8 @@ class NoteCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // 날짜 포맷
-    final dateFormat = DateFormat('yyyy.MM.dd HH:mm');
+    // 날짜 포맷 (Renewal 스타일)
+    final dateFormat = DateFormat('yyyy.MM.dd');
     final formattedDate = dateFormat.format(note.updatedAt);
 
     return GestureDetector(
@@ -40,101 +40,100 @@ class NoteCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: AppColors.surfaceContainerLowest,
           borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
+          // Stitch subtle shadow
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xFF29343A).withValues(alpha: 0.04),
+              blurRadius: 20,
+              offset: const Offset(0, 4),
+            ),
+          ],
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: Row(
           children: [
-            // 헤더 (타입 아이콘 + 즐겨찾기)
-            Row(
-              children: [
-                // 타입 아이콘
-                Text(
-                  note.type.icon,
-                  style: const TextStyle(fontSize: 20),
-                ),
-                SizedBox(width: AppTheme.spacing1),
-
-                // 타입 이름
-                Text(
-                  note.type.displayName,
-                  style: AppTypography.labelMedium.copyWith(
-                    color: AppColors.onSurfaceVariant,
-                  ),
-                ),
-
-                const Spacer(),
-
-                // 즐겨찾기 버튼
-                if (onFavoriteTap != null)
-                  IconButton(
-                    icon: Icon(
-                      note.isFavorite ? Icons.star : Icons.star_border,
-                      color: note.isFavorite
-                          ? AppColors.primary
-                          : AppColors.onSurfaceVariant,
-                      size: 20,
-                    ),
-                    onPressed: onFavoriteTap,
-                    padding: EdgeInsets.zero,
-                    constraints: const BoxConstraints(),
-                  ),
-              ],
-            ),
-
-            SizedBox(height: AppTheme.spacing2),
-
-            // 제목
-            Text(
-              note.title,
-              style: AppTypography.headlineSmall.copyWith(
-                color: AppColors.onSurface,
+            // 아이콘 프리픽스
+            Container(
+              padding: EdgeInsets.all(AppTheme.spacing2),
+              decoration: BoxDecoration(
+                color: AppColors.surfaceContainerLow,
+                borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
               ),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
+              child: Icon(
+                Icons.lock,
+                size: 20,
+                color: AppColors.primary,
+              ),
             ),
 
-            SizedBox(height: AppTheme.spacing2),
+            SizedBox(width: AppTheme.spacing3),
 
-            // 암호화 배지 + 날짜
-            Row(
-              children: [
-                // 암호화 배지
-                Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: AppTheme.spacing2,
-                    vertical: AppTheme.spacing1 / 2,
+            // 제목 + 날짜 컬럼
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // 제목
+                  Text(
+                    note.title,
+                    style: AppTypography.titleMedium.copyWith(
+                      color: AppColors.onSurface,
+                      fontWeight: FontWeight.w600,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  decoration: BoxDecoration(
-                    color: AppColors.surfaceContainerLow,
-                    borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
+
+                  SizedBox(height: AppTheme.spacing1 / 2),
+
+                  // 타입 + 날짜
+                  Row(
                     children: [
-                      Icon(
-                        Icons.lock,
-                        size: 12,
-                        color: AppColors.primary,
-                      ),
-                      SizedBox(width: AppTheme.spacing1 / 2),
                       Text(
-                        '암호화됨',
+                        note.type.displayName,
                         style: AppTypography.labelSmall.copyWith(
-                          color: AppColors.primary,
+                          color: AppColors.onSurfaceVariant,
+                        ),
+                      ),
+                      SizedBox(width: AppTheme.spacing1),
+                      Text(
+                        '•',
+                        style: AppTypography.labelSmall.copyWith(
+                          color: AppColors.onSurfaceVariant,
+                        ),
+                      ),
+                      SizedBox(width: AppTheme.spacing1),
+                      Text(
+                        formattedDate,
+                        style: AppTypography.labelSmall.copyWith(
+                          color: AppColors.onSurfaceVariant,
                         ),
                       ),
                     ],
                   ),
-                ),
+                ],
+              ),
+            ),
 
-                const Spacer(),
-
-                // 날짜
-                Text(
-                  formattedDate,
-                  style: AppTypography.labelSmall.copyWith(
-                    color: AppColors.onSurfaceVariant,
+            // 우측 영역 (즐겨찾기 + chevron)
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // 즐겨찾기 버튼
+                if (onFavoriteTap != null && note.isFavorite)
+                  Padding(
+                    padding: EdgeInsets.only(right: AppTheme.spacing1),
+                    child: Icon(
+                      Icons.star,
+                      color: AppColors.primary,
+                      size: 20,
+                    ),
                   ),
+
+                // Navigation 인디케이터
+                Icon(
+                  Icons.chevron_right,
+                  size: 24,
+                  color: AppColors.onSurfaceVariant,
                 ),
               ],
             ),

@@ -224,56 +224,109 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
               ),
             )
           : SafeArea(
-              child: SingleChildScrollView(
-                padding: EdgeInsets.all(AppTheme.spacing4),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // 제목
-                    TextField(
-                      controller: _titleController,
-                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                            color: AppColors.onSurface,
-                            fontWeight: FontWeight.w600,
-                          ),
-                      decoration: InputDecoration(
-                        hintText: '제목',
-                        hintStyle: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                              color: AppColors.onSurfaceVariant.withValues(alpha: 0.5),
-                            ),
-                        border: InputBorder.none,
+              child: Column(
+                children: [
+                  // Encryption Status Header (Stitch 스타일)
+                  Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: AppTheme.spacing4,
+                      vertical: AppTheme.spacing3,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppColors.surfaceContainerLowest,
+                      border: Border(
+                        bottom: BorderSide(
+                          color: AppColors.ghostBorder,
+                          width: 1,
+                        ),
                       ),
-                      maxLines: 1,
                     ),
-
-                    SizedBox(height: AppTheme.spacing2),
-
-                    // 구분선
-                    Container(
-                      height: 1,
-                      color: AppColors.ghostBorder,
-                    ),
-
-                    SizedBox(height: AppTheme.spacing4),
-
-                    // 내용
-                    TextField(
-                      controller: _contentController,
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: AppColors.onSurface,
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.shield,
+                          size: 20,
+                          color: AppColors.primary,
+                        ),
+                        SizedBox(width: AppTheme.spacing2),
+                        Text(
+                          'End-to-End Encrypted',
+                          style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                                color: AppColors.primary,
+                                fontWeight: FontWeight.w600,
+                              ),
+                        ),
+                        const Spacer(),
+                        Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: AppTheme.spacing2,
+                            vertical: AppTheme.spacing1 / 2,
                           ),
-                      decoration: InputDecoration(
-                        hintText: '내용을 입력하세요...',
-                        hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: AppColors.onSurfaceVariant.withValues(alpha: 0.5),
-                            ),
-                        border: InputBorder.none,
-                      ),
-                      maxLines: null,
-                      keyboardType: TextInputType.multiline,
+                          decoration: BoxDecoration(
+                            color: AppColors.surfaceContainerLow,
+                            borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
+                          ),
+                          child: Text(
+                            '안전',
+                            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                                  color: AppColors.primary,
+                                ),
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+
+                  // Editor Area
+                  Expanded(
+                    child: SingleChildScrollView(
+                      padding: EdgeInsets.all(AppTheme.spacing4),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // 제목
+                          TextField(
+                            controller: _titleController,
+                            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                  color: AppColors.onSurface,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                            decoration: InputDecoration(
+                              hintText: '제목',
+                              hintStyle: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                    color: AppColors.onSurfaceVariant.withValues(alpha: 0.5),
+                                  ),
+                              border: InputBorder.none,
+                              contentPadding: EdgeInsets.zero,
+                            ),
+                            maxLines: 1,
+                          ),
+
+                          SizedBox(height: AppTheme.spacing3),
+
+                          // 내용
+                          TextField(
+                            controller: _contentController,
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                  color: AppColors.onSurface,
+                                  height: 1.6,
+                                ),
+                            decoration: InputDecoration(
+                              hintText: '내용을 입력하세요...',
+                              hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: AppColors.onSurfaceVariant.withValues(alpha: 0.5),
+                                  ),
+                              border: InputBorder.none,
+                              contentPadding: EdgeInsets.zero,
+                            ),
+                            maxLines: null,
+                            keyboardType: TextInputType.multiline,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
     );

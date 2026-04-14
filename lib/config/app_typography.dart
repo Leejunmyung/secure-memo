@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-/// Stitch "The Sovereign Vault" 디자인 시스템 타이포그래피
+/// Renewal SecureKeep 디자인 시스템 타이포그래피
 ///
-/// Display & Headlines: Public Sans (기하학적 안정감)
+/// Display & Headlines: Plus Jakarta Sans (Renewal)
 /// Body & Labels: Inter (작은 크기에서도 뛰어난 가독성)
 class AppTypography {
-  // Display Styles (Public Sans)
+  // Display Styles (Plus Jakarta Sans)
   /// Display Large: 빈 상태(empty states)에 사용
-  static TextStyle get displayLarge => GoogleFonts.publicSans(
+  static TextStyle get displayLarge => GoogleFonts.plusJakartaSans(
         fontSize: 57,
         fontWeight: FontWeight.w400,
         letterSpacing: -1.14, // -2% tracking
@@ -16,7 +16,7 @@ class AppTypography {
       );
 
   /// Display Medium: 주요 제목
-  static TextStyle get displayMedium => GoogleFonts.publicSans(
+  static TextStyle get displayMedium => GoogleFonts.plusJakartaSans(
         fontSize: 45,
         fontWeight: FontWeight.w400,
         letterSpacing: -0.9,
@@ -24,16 +24,16 @@ class AppTypography {
       );
 
   /// Display Small
-  static TextStyle get displaySmall => GoogleFonts.publicSans(
+  static TextStyle get displaySmall => GoogleFonts.plusJakartaSans(
         fontSize: 36,
         fontWeight: FontWeight.w400,
         letterSpacing: -0.72,
         height: 1.22,
       );
 
-  // Headline Styles (Public Sans)
+  // Headline Styles (Plus Jakarta Sans)
   /// Headline Large
-  static TextStyle get headlineLarge => GoogleFonts.publicSans(
+  static TextStyle get headlineLarge => GoogleFonts.plusJakartaSans(
         fontSize: 32,
         fontWeight: FontWeight.w600,
         letterSpacing: -0.64,
@@ -41,7 +41,7 @@ class AppTypography {
       );
 
   /// Headline Medium
-  static TextStyle get headlineMedium => GoogleFonts.publicSans(
+  static TextStyle get headlineMedium => GoogleFonts.plusJakartaSans(
         fontSize: 28,
         fontWeight: FontWeight.w600,
         letterSpacing: -0.56,
@@ -49,16 +49,16 @@ class AppTypography {
       );
 
   /// Headline Small: 메모 제목에 사용
-  static TextStyle get headlineSmall => GoogleFonts.publicSans(
+  static TextStyle get headlineSmall => GoogleFonts.plusJakartaSans(
         fontSize: 24,
         fontWeight: FontWeight.w600,
         letterSpacing: -0.48, // -2% tracking (locked in feel)
         height: 1.33,
       );
 
-  // Title Styles (Public Sans)
+  // Title Styles (Plus Jakarta Sans)
   /// Title Large
-  static TextStyle get titleLarge => GoogleFonts.publicSans(
+  static TextStyle get titleLarge => GoogleFonts.plusJakartaSans(
         fontSize: 22,
         fontWeight: FontWeight.w600,
         letterSpacing: 0,
@@ -66,7 +66,7 @@ class AppTypography {
       );
 
   /// Title Medium
-  static TextStyle get titleMedium => GoogleFonts.publicSans(
+  static TextStyle get titleMedium => GoogleFonts.plusJakartaSans(
         fontSize: 16,
         fontWeight: FontWeight.w600,
         letterSpacing: 0.15,
@@ -74,7 +74,7 @@ class AppTypography {
       );
 
   /// Title Small
-  static TextStyle get titleSmall => GoogleFonts.publicSans(
+  static TextStyle get titleSmall => GoogleFonts.plusJakartaSans(
         fontSize: 14,
         fontWeight: FontWeight.w600,
         letterSpacing: 0.1,

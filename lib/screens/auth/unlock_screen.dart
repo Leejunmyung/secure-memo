@@ -72,83 +72,144 @@ class _UnlockScreenState extends State<UnlockScreen> {
     return Scaffold(
       backgroundColor: AppColors.surface,
       body: SafeArea(
-        child: Center(
-          child: Padding(
-            padding: EdgeInsets.all(AppTheme.spacing6),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                // 앱 아이콘
-                Container(
-                  width: 100,
-                  height: 100,
-                  decoration: BoxDecoration(
-                    color: AppColors.primary,
-                    borderRadius:
-                        BorderRadius.circular(AppTheme.radiusLarge * 3),
-                  ),
-                  child: Icon(
-                    Icons.lock_outline,
-                    size: 56,
-                    color: AppColors.onPrimary,
-                  ),
+        child: Padding(
+          padding: EdgeInsets.all(AppTheme.spacing6),
+          child: Column(
+            children: [
+              // Spacer to push content to center
+              const Spacer(flex: 2),
+
+              // 앱 아이콘
+              Container(
+                width: 100,
+                height: 100,
+                decoration: BoxDecoration(
+                  gradient: AppColors.primaryGradient,
+                  borderRadius:
+                      BorderRadius.circular(AppTheme.radiusLarge * 3),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.primary.withValues(alpha: 0.2),
+                      blurRadius: 20,
+                      offset: const Offset(0, 8),
+                    ),
+                  ],
                 ),
+                child: Icon(
+                  Icons.lock_outline,
+                  size: 56,
+                  color: AppColors.onPrimary,
+                ),
+              ),
 
-                SizedBox(height: AppTheme.spacing6),
+              SizedBox(height: AppTheme.spacing6),
 
-                // 앱 이름
-                Text(
-                  AppConstants.appName,
-                  style: Theme.of(context).textTheme.displayMedium?.copyWith(
-                        color: AppColors.onSurface,
+              // Vault Locked 헤딩
+              Text(
+                'Vault Locked',
+                style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+                      color: AppColors.onSurface,
+                      fontWeight: FontWeight.bold,
+                    ),
+              ),
+
+              SizedBox(height: AppTheme.spacing2),
+
+              // 앱 이름
+              Text(
+                AppConstants.appName,
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      color: AppColors.onSurfaceVariant,
+                    ),
+              ),
+
+              SizedBox(height: AppTheme.spacing8),
+
+              // 잠금 해제 버튼 또는 로딩 인디케이터
+              if (_isAuthenticating)
+                CircularProgressIndicator(color: AppColors.primary)
+              else
+                Column(
+                  children: [
+                    // 생체 인증 버튼
+                    Container(
+                      decoration: BoxDecoration(
+                        gradient: AppColors.primaryGradient,
+                        borderRadius:
+                            BorderRadius.circular(AppTheme.radiusMedium),
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppColors.primary.withValues(alpha: 0.3),
+                            blurRadius: 12,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
                       ),
-                ),
-
-                SizedBox(height: AppTheme.spacing2),
-
-                // 잠금 상태 메시지
-                Text(
-                  '앱이 잠겨있습니다',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: AppColors.onSurfaceVariant,
-                      ),
-                ),
-
-                SizedBox(height: AppTheme.spacing8),
-
-                // 잠금 해제 버튼 또는 로딩 인디케이터
-                if (_isAuthenticating)
-                  CircularProgressIndicator(color: AppColors.primary)
-                else
-                  Column(
-                    children: [
-                      // 생체 인증 버튼
-                      SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton.icon(
-                          onPressed: _attemptBiometricUnlock,
-                          icon: const Icon(Icons.fingerprint),
-                          label: const Text('생체 인증으로 잠금 해제'),
+                      child: ElevatedButton.icon(
+                        onPressed: _attemptBiometricUnlock,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.transparent,
+                          shadowColor: Colors.transparent,
+                          minimumSize: const Size(double.infinity, 56),
+                        ),
+                        icon: const Icon(Icons.fingerprint, size: 28),
+                        label: const Text(
+                          '생체 인증으로 잠금 해제',
+                          style: TextStyle(fontSize: 16),
                         ),
                       ),
+                    ),
 
-                      SizedBox(height: AppTheme.spacing3),
+                    SizedBox(height: AppTheme.spacing4),
 
-                      // PIN 입력 버튼
-                      TextButton(
-                        onPressed: _showPinInput,
-                        child: Text(
-                          'PIN으로 잠금 해제',
-                          style:
-                              Theme.of(context).textTheme.labelMedium?.copyWith(
-                                    color: AppColors.primary,
-                                  ),
-                        ),
+                    // PIN 입력 버튼
+                    TextButton(
+                      onPressed: _showPinInput,
+                      style: TextButton.styleFrom(
+                        minimumSize: const Size(double.infinity, 48),
                       ),
-                    ],
-                  ),
-              ],
-            ),
+                      child: Text(
+                        'PIN으로 잠금 해제',
+                        style:
+                            Theme.of(context).textTheme.labelLarge?.copyWith(
+                                  color: AppColors.primary,
+                                ),
+                      ),
+                    ),
+                  ],
+                ),
+
+              // Spacer to push footer to bottom
+              const Spacer(flex: 3),
+
+              // End-to-End Encrypted 푸터
+              Container(
+                padding: EdgeInsets.all(AppTheme.spacing3),
+                decoration: BoxDecoration(
+                  color: AppColors.surfaceContainerLow,
+                  borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.shield,
+                      size: 20,
+                      color: AppColors.primary,
+                    ),
+                    SizedBox(width: AppTheme.spacing2),
+                    Text(
+                      'End-to-End Encrypted',
+                      style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                            color: AppColors.onSurfaceVariant,
+                          ),
+                    ),
+                  ],
+                ),
+              ),
+
+              SizedBox(height: AppTheme.spacing3),
+            ],
           ),
         ),
       ),

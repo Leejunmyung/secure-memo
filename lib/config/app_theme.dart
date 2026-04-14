@@ -21,10 +21,11 @@ class AppTheme {
   static const double spacing8 = 48.0;  // 0.35rem * 8
   static const double spacing12 = 72.0; // 0.35rem * 12
 
-  // Border Radius (ROUND_FOUR)
-  static const double radiusSmall = 4.0;
-  static const double radiusMedium = 6.0;
-  static const double radiusLarge = 8.0;
+  // Border Radius (Renewal: 1rem = 16px)
+  static const double radiusSmall = 8.0;   // half of default
+  static const double radiusMedium = 16.0; // 1rem
+  static const double radiusLarge = 32.0;  // 2rem
+  static const double radiusFull = 9999.0; // full rounded
 
   /// Light Theme (기본 테마)
   static ThemeData get lightTheme {
