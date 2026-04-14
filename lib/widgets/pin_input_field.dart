@@ -89,6 +89,12 @@ class _PinInputFieldState extends State<PinInputField> {
 
   @override
   Widget build(BuildContext context) {
+    // 화면 너비에 맞게 필드 크기 계산
+    final screenWidth = MediaQuery.of(context).size.width;
+    final totalSpacing = AppTheme.spacing1 * 2 * widget.pinLength; // 좌우 margin
+    final availableWidth = screenWidth - AppTheme.spacing6 * 2 - totalSpacing; // padding 고려
+    final fieldWidth = (availableWidth / widget.pinLength).clamp(40.0, 50.0);
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: List.generate(
@@ -96,7 +102,7 @@ class _PinInputFieldState extends State<PinInputField> {
         (index) => Container(
           margin: EdgeInsets.symmetric(horizontal: AppTheme.spacing1),
           child: SizedBox(
-            width: 50,
+            width: fieldWidth,
             height: 60,
             child: TextField(
               controller: _controllers[index],
@@ -105,9 +111,10 @@ class _PinInputFieldState extends State<PinInputField> {
               keyboardType: TextInputType.number,
               maxLength: 1,
               obscureText: true,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
+                color: AppColors.onSurface,
               ),
               inputFormatters: [
                 FilteringTextInputFormatter.digitsOnly,
@@ -116,6 +123,7 @@ class _PinInputFieldState extends State<PinInputField> {
                 counterText: '',
                 filled: true,
                 fillColor: AppColors.surfaceContainerLow,
+                contentPadding: const EdgeInsets.symmetric(vertical: 16),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
                   borderSide: BorderSide.none,

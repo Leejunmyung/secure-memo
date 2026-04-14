@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import '../../config/app_colors.dart';
 import '../../config/app_theme.dart';
 import '../../services/recovery_key_service.dart';
-import '../../services/encryption_service.dart';
 import '../../widgets/recovery_key_grid.dart';
 import '../home/home_screen.dart';
 
@@ -20,7 +19,6 @@ class RecoveryKeyScreen extends StatefulWidget {
 
 class _RecoveryKeyScreenState extends State<RecoveryKeyScreen> {
   final RecoveryKeyService _recoveryService = RecoveryKeyService();
-  final EncryptionService _encryptionService = EncryptionService();
 
   String _mnemonic = '';
   List<String> _words = [];

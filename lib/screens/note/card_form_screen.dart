@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../config/app_colors.dart';
 import '../../config/app_theme.dart';
-import '../../models/account_fields.dart';
+import '../../models/card_fields.dart';
 import '../../models/encrypted_payload.dart';
 import '../../models/note.dart';
 import '../../models/note_type.dart';
@@ -10,27 +10,28 @@ import '../../providers/note_provider.dart';
 import '../../utils/validators.dart';
 import '../../widgets/secure_text_field.dart';
 
-/// 계정 정보 입력 화면
+/// 카드 정보 입력 화면
 ///
-/// 서비스 계정 정보 (사용자명, 비밀번호 등) 입력
-class AccountFormScreen extends StatefulWidget {
+/// 신용/체크카드 정보 (카드 번호, 만료일, CVV 등) 입력
+class CardFormScreen extends StatefulWidget {
   final Note? note; // null이면 새 메모, 값이 있으면 편집 모드
 
-  const AccountFormScreen({
+  const CardFormScreen({
     super.key,
     this.note,
   });
 
   @override
-  State<AccountFormScreen> createState() => _AccountFormScreenState();
+  State<CardFormScreen> createState() => _CardFormScreenState();
 }
 
-class _AccountFormScreenState extends State<AccountFormScreen> {
+class _CardFormScreenState extends State<CardFormScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _serviceNameController = TextEditingController();
-  final _usernameController = TextEditingController();
-  final _passwordController = TextEditingController();
-  final _urlController = TextEditingController();
+  final _cardholderNameController = TextEditingController();
+  final _cardNumberController = TextEditingController();
+  final _expiryDateController = TextEditingController();
+  final _cvvController = TextEditingController();
+  final _bankNameController = TextEditingController();
   final _notesController = TextEditingController();
 
   bool _isLoading = false;
@@ -46,10 +47,11 @@ class _AccountFormScreenState extends State<AccountFormScreen> {
 
   @override
   void dispose() {
-    _serviceNameController.dispose();
-    _usernameController.dispose();
-    _passwordController.dispose();
-    _urlController.dispose();
+    _cardholderNameController.dispose();
+    _cardNumberController.dispose();
+    _expiryDateController.dispose();
+    _cvvController.dispose();
+    _bankNameController.dispose();
     _notesController.dispose();
     super.dispose();
   }
@@ -63,14 +65,20 @@ class _AccountFormScreenState extends State<AccountFormScreen> {
       final payload = await noteProvider.decryptNote(widget.note!);
 
       if (payload.fields != null) {
+        final cardNumber = payload.fields!['cardNumber'] ?? '';
         setState(() {
-          _serviceNameController.text = payload.fields!['serviceName'] ?? '';
-          _usernameController.text = payload.fields!['username'] ?? '';
-          _passwordController.text = payload.fields!['password'] ?? '';
-          _urlController.text = payload.fields!['url'] ?? '';
+          _cardholderNameController.text = payload.fields!['cardholderName'] ?? '';
+          _cardNumberController.text = cardNumber;
+          _expiryDateController.text = payload.fields!['expiryDate'] ?? '';
+          _cvvController.text = payload.fields!['cvv'] ?? '';
+          _bankNameController.text = payload.fields!['bankName'] ?? '';
           _notesController.text = payload.fields!['notes'] ?? '';
           _isLoadingContent = false;
         });
+        // 카드 번호 포맷팅 적용
+        if (cardNumber.isNotEmpty) {
+          _formatCardNumber(cardNumber);
+        }
       }
     } catch (e) {
       if (mounted) {
@@ -86,7 +94,45 @@ class _AccountFormScreenState extends State<AccountFormScreen> {
     }
   }
 
-  Future<void> _saveAccount() async {
+  /// 카드 번호 자동 포맷팅 (1234 5678 9012 3456)
+  void _formatCardNumber(String value) {
+    final cleaned = value.replaceAll(RegExp(r'\s+'), '');
+    final buffer = StringBuffer();
+
+    for (int i = 0; i < cleaned.length; i++) {
+      if (i > 0 && i % 4 == 0) {
+        buffer.write(' ');
+      }
+      buffer.write(cleaned[i]);
+    }
+
+    final formatted = buffer.toString();
+    if (formatted != value) {
+      _cardNumberController.value = TextEditingValue(
+        text: formatted,
+        selection: TextSelection.collapsed(offset: formatted.length),
+      );
+    }
+  }
+
+  /// 만료일 자동 포맷팅 (MM/YY)
+  void _formatExpiryDate(String value) {
+    final cleaned = value.replaceAll('/', '');
+    String formatted = cleaned;
+
+    if (cleaned.length >= 2) {
+      formatted = '${cleaned.substring(0, 2)}/${cleaned.substring(2)}';
+    }
+
+    if (formatted != value) {
+      _expiryDateController.value = TextEditingValue(
+        text: formatted,
+        selection: TextSelection.collapsed(offset: formatted.length),
+      );
+    }
+  }
+
+  Future<void> _saveCard() async {
     if (!_formKey.currentState!.validate()) {
       return;
     }
@@ -96,20 +142,22 @@ class _AccountFormScreenState extends State<AccountFormScreen> {
     });
 
     try {
-      final accountFields = AccountFields(
-        serviceName: _serviceNameController.text.trim(),
-        username: _usernameController.text.trim(),
-        password: _passwordController.text,
-        url: _urlController.text.trim().isEmpty ? null : _urlController.text.trim(),
+      final cardFields = CardFields(
+        cardholderName: _cardholderNameController.text.trim(),
+        cardNumber: _cardNumberController.text.replaceAll(' ', ''),
+        expiryDate: _expiryDateController.text.trim(),
+        cvv: _cvvController.text.trim(),
+        bankName: _bankNameController.text.trim().isEmpty ? null : _bankNameController.text.trim(),
         notes: _notesController.text.trim().isEmpty ? null : _notesController.text.trim(),
       );
 
-      final payload = EncryptedPayload.account(
-        serviceName: accountFields.serviceName,
-        username: accountFields.username,
-        password: accountFields.password,
-        url: accountFields.url,
-        notes: accountFields.notes,
+      final payload = EncryptedPayload.card(
+        cardholderName: cardFields.cardholderName,
+        cardNumber: cardFields.cardNumber,
+        expiryDate: cardFields.expiryDate,
+        cvv: cardFields.cvv,
+        bankName: cardFields.bankName,
+        notes: cardFields.notes,
       );
 
       final noteProvider = Provider.of<NoteProvider>(context, listen: false);
@@ -117,15 +165,15 @@ class _AccountFormScreenState extends State<AccountFormScreen> {
       if (widget.note == null) {
         // 새 메모 생성
         await noteProvider.createNote(
-          title: accountFields.serviceName,
+          title: cardFields.bankName ?? '카드 정보',
           payload: payload,
-          type: NoteType.account,
+          type: NoteType.card,
         );
       } else {
         // 기존 메모 업데이트
         await noteProvider.updateNote(
           id: widget.note!.id,
-          title: accountFields.serviceName,
+          title: cardFields.bankName ?? '카드 정보',
           payload: payload,
         );
       }
@@ -134,7 +182,7 @@ class _AccountFormScreenState extends State<AccountFormScreen> {
         Navigator.of(context).pop();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(widget.note == null ? '계정 정보가 저장되었습니다' : '계정 정보가 수정되었습니다'),
+            content: Text(widget.note == null ? '카드 정보가 저장되었습니다' : '카드 정보가 수정되었습니다'),
             backgroundColor: AppColors.primary,
           ),
         );
@@ -158,11 +206,11 @@ class _AccountFormScreenState extends State<AccountFormScreen> {
   }
 
   /// 메모 삭제
-  Future<void> _deleteAccount() async {
+  Future<void> _deleteCard() async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('계정 정보 삭제'),
+        title: const Text('카드 정보 삭제'),
         content: const Text('정말 삭제하시겠습니까?'),
         actions: [
           TextButton(
@@ -189,7 +237,7 @@ class _AccountFormScreenState extends State<AccountFormScreen> {
           Navigator.pop(context);
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('계정 정보가 삭제되었습니다'),
+              content: Text('카드 정보가 삭제되었습니다'),
             ),
           );
         }
@@ -211,12 +259,12 @@ class _AccountFormScreenState extends State<AccountFormScreen> {
     return Scaffold(
       backgroundColor: AppColors.surface,
       appBar: AppBar(
-        title: Text(widget.note == null ? '계정 정보' : '계정 정보 편집'),
+        title: Text(widget.note == null ? '카드 정보' : '카드 정보 편집'),
         actions: [
           if (widget.note != null)
             IconButton(
               icon: const Icon(Icons.delete_outline),
-              onPressed: _deleteAccount,
+              onPressed: _deleteCard,
               tooltip: '삭제',
             ),
           if (_isLoading)
@@ -236,7 +284,7 @@ class _AccountFormScreenState extends State<AccountFormScreen> {
           else
             IconButton(
               icon: const Icon(Icons.check),
-              onPressed: _saveAccount,
+              onPressed: _saveCard,
               tooltip: '저장',
             ),
         ],
@@ -265,14 +313,14 @@ class _AccountFormScreenState extends State<AccountFormScreen> {
                   child: Row(
                     children: [
                       Icon(
-                        Icons.info_outline,
+                        Icons.credit_card,
                         size: 20,
                         color: AppColors.primary,
                       ),
                       SizedBox(width: AppTheme.spacing2),
                       Expanded(
                         child: Text(
-                          '모든 정보는 AES-256-GCM으로 암호화되어 저장됩니다',
+                          '카드 정보는 AES-256-GCM으로 암호화되어 저장됩니다',
                           style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                 color: AppColors.onSurfaceVariant,
                               ),
@@ -284,54 +332,96 @@ class _AccountFormScreenState extends State<AccountFormScreen> {
 
                 SizedBox(height: AppTheme.spacing6),
 
-                // 서비스명 (필수)
+                // 카드 소유자 (필수)
                 SecureTextField(
-                  controller: _serviceNameController,
-                  label: '서비스명',
-                  hint: '예: Google, Naver, Github',
-                  validator: (value) => Validators.required(value, '서비스명'),
-                  keyboardType: TextInputType.text,
+                  controller: _cardholderNameController,
+                  label: '카드 소유자',
+                  hint: '예: 홍길동',
+                  validator: (value) => Validators.required(value, '카드 소유자'),
+                  keyboardType: TextInputType.name,
                 ),
 
                 SizedBox(height: AppTheme.spacing4),
 
-                // 사용자명 (필수)
+                // 카드 번호 (필수)
                 SecureTextField(
-                  controller: _usernameController,
-                  label: '사용자명 또는 이메일',
-                  hint: '예: user@example.com',
-                  validator: (value) => Validators.required(value, '사용자명'),
-                  keyboardType: TextInputType.emailAddress,
-                ),
-
-                SizedBox(height: AppTheme.spacing4),
-
-                // 비밀번호 (필수)
-                SecureTextField(
-                  controller: _passwordController,
-                  label: '비밀번호',
-                  obscureText: true,
-                  showVisibilityToggle: true,
-                  showCopyButton: true,
-                  validator: (value) => Validators.required(value, '비밀번호'),
-                ),
-
-                SizedBox(height: AppTheme.spacing4),
-
-                // URL (선택)
-                SecureTextField(
-                  controller: _urlController,
-                  label: 'URL (선택)',
-                  hint: '예: https://example.com',
-                  keyboardType: TextInputType.url,
+                  controller: _cardNumberController,
+                  label: '카드 번호',
+                  hint: '1234 5678 9012 3456',
+                  keyboardType: TextInputType.number,
+                  maxLength: 19, // 16자리 + 3개 공백
+                  onChanged: _formatCardNumber,
                   validator: (value) {
-                    if (value != null && value.trim().isNotEmpty) {
-                      if (!Validators.isValidUrl(value.trim())) {
-                        return '올바른 URL 형식이 아닙니다';
-                      }
+                    final error = Validators.required(value, '카드 번호');
+                    if (error != null) return error;
+
+                    if (!Validators.isValidCardNumber(value!)) {
+                      return '올바른 카드 번호가 아닙니다';
                     }
                     return null;
                   },
+                ),
+
+                SizedBox(height: AppTheme.spacing4),
+
+                // 만료일 & CVV (같은 줄)
+                Row(
+                  children: [
+                    // 만료일
+                    Expanded(
+                      child: SecureTextField(
+                        controller: _expiryDateController,
+                        label: '만료일',
+                        hint: 'MM/YY',
+                        keyboardType: TextInputType.number,
+                        maxLength: 5,
+                        onChanged: _formatExpiryDate,
+                        validator: (value) {
+                          final error = Validators.required(value, '만료일');
+                          if (error != null) return error;
+
+                          if (!Validators.isValidExpiryDate(value!)) {
+                            return '올바른 만료일이 아닙니다';
+                          }
+                          return null;
+                        },
+                      ),
+                    ),
+
+                    SizedBox(width: AppTheme.spacing3),
+
+                    // CVV
+                    Expanded(
+                      child: SecureTextField(
+                        controller: _cvvController,
+                        label: 'CVV',
+                        hint: '123',
+                        obscureText: true,
+                        showVisibilityToggle: true,
+                        keyboardType: TextInputType.number,
+                        maxLength: 4,
+                        validator: (value) {
+                          final error = Validators.required(value, 'CVV');
+                          if (error != null) return error;
+
+                          if (!Validators.isValidCvv(value!)) {
+                            return '3-4자리 숫자';
+                          }
+                          return null;
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+
+                SizedBox(height: AppTheme.spacing4),
+
+                // 은행명 (선택)
+                SecureTextField(
+                  controller: _bankNameController,
+                  label: '은행명 (선택)',
+                  hint: '예: 신한은행, KB국민은행',
+                  keyboardType: TextInputType.text,
                 ),
 
                 SizedBox(height: AppTheme.spacing4),
@@ -340,10 +430,12 @@ class _AccountFormScreenState extends State<AccountFormScreen> {
                 SecureTextField(
                   controller: _notesController,
                   label: '추가 메모 (선택)',
-                  hint: '보안 질문, 복구 이메일 등',
+                  hint: 'PIN, 결제 비밀번호 등',
                   maxLines: 4,
                   maxLength: 500,
                   keyboardType: TextInputType.multiline,
+                  obscureText: true,
+                  showVisibilityToggle: true,
                 ),
 
                 SizedBox(height: AppTheme.spacing6),
@@ -352,20 +444,20 @@ class _AccountFormScreenState extends State<AccountFormScreen> {
                 Container(
                   padding: EdgeInsets.all(AppTheme.spacing3),
                   decoration: BoxDecoration(
-                    color: AppColors.surfaceContainerLow,
+                    color: AppColors.errorContainer.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
                   ),
                   child: Row(
                     children: [
                       Icon(
-                        Icons.lock_outline,
+                        Icons.warning_outlined,
                         size: 20,
-                        color: AppColors.primary,
+                        color: AppColors.error,
                       ),
                       SizedBox(width: AppTheme.spacing2),
                       Expanded(
                         child: Text(
-                          '비밀번호 복사 시 1분 후 자동으로 클립보드가 삭제됩니다',
+                          '카드 정보는 매우 민감한 정보입니다.\n복구 키를 안전하게 보관하세요.',
                           style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                 color: AppColors.onSurfaceVariant,
                               ),

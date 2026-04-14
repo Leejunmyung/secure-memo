@@ -1,8 +1,8 @@
 /// 입력 검증 유틸리티
 class Validators {
-  /// 카드 번호 Luhn 알고리즘 검증
+  /// 카드 번호 검증
   ///
-  /// 신용카드 번호 유효성 검증 (체크섬 알고리즘)
+  /// 숫자만 확인 (9-19자리)
   static bool isValidCardNumber(String cardNumber) {
     // 공백 제거
     final cleaned = cardNumber.replaceAll(RegExp(r'\s+'), '');
@@ -12,30 +12,12 @@ class Validators {
       return false;
     }
 
-    // 13-19자리 확인 (일반적인 카드 번호 길이)
-    if (cleaned.length < 13 || cleaned.length > 19) {
+    // 9-19자리 확인 (유연한 길이 허용)
+    if (cleaned.length < 9 || cleaned.length > 19) {
       return false;
     }
 
-    // Luhn 알고리즘
-    int sum = 0;
-    bool alternate = false;
-
-    for (int i = cleaned.length - 1; i >= 0; i--) {
-      int digit = int.parse(cleaned[i]);
-
-      if (alternate) {
-        digit *= 2;
-        if (digit > 9) {
-          digit -= 9;
-        }
-      }
-
-      sum += digit;
-      alternate = !alternate;
-    }
-
-    return sum % 10 == 0;
+    return true;
   }
 
   /// 만료일 포맷 검증 (MM/YY)
@@ -60,18 +42,14 @@ class Validators {
 
   /// URL 포맷 검증
   ///
-  /// http://, https:// 프로토콜 확인
+  /// 간단한 형식 확인 (프로토콜 선택사항)
   static bool isValidUrl(String url) {
     if (url.isEmpty) {
       return true; // 선택 필드이므로 빈 값 허용
     }
 
-    try {
-      final uri = Uri.parse(url);
-      return uri.hasScheme && (uri.scheme == 'http' || uri.scheme == 'https');
-    } catch (e) {
-      return false;
-    }
+    // 기본적인 형식만 확인 (점이 포함되어 있거나 http로 시작하면 OK)
+    return url.contains('.') || url.startsWith('http://') || url.startsWith('https://');
   }
 
   /// 이메일 포맷 검증

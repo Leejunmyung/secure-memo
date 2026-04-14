@@ -7,6 +7,10 @@ import '../../providers/note_provider.dart';
 import '../../models/note_type.dart';
 import '../../models/encrypted_payload.dart';
 import '../../widgets/note_card.dart';
+import '../note/note_editor_screen.dart';
+import '../note/account_form_screen.dart';
+import '../note/card_form_screen.dart';
+import '../settings/settings_screen.dart';
 
 /// 홈 화면 (메모 목록)
 ///
@@ -26,11 +30,9 @@ class HomeScreen extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.search),
             onPressed: () {
-              // TODO: 검색 기능 구현 (Phase 2 후반)
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('검색 기능은 곧 추가될 예정입니다'),
-                ),
+              showSearch(
+                context: context,
+                delegate: NoteSearchDelegate(),
               );
             },
           ),
@@ -38,10 +40,9 @@ class HomeScreen extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.settings),
             onPressed: () {
-              // TODO: 설정 화면 구현 (Phase 4)
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('설정 기능은 Phase 4에서 구현될 예정입니다'),
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => const SettingsScreen(),
                 ),
               );
             },
@@ -96,12 +97,30 @@ class HomeScreen extends StatelessWidget {
               return NoteCard(
                 note: note,
                 onTap: () {
-                  // TODO: 메모 상세/편집 화면으로 이동
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('${note.title} 선택됨'),
-                    ),
-                  );
+                  // 메모 타입에 따라 적절한 편집 화면으로 이동
+                  switch (note.type) {
+                    case NoteType.general:
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => NoteEditorScreen(note: note),
+                        ),
+                      );
+                      break;
+                    case NoteType.account:
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => AccountFormScreen(note: note),
+                        ),
+                      );
+                      break;
+                    case NoteType.card:
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => CardFormScreen(note: note),
+                        ),
+                      );
+                      break;
+                  }
                 },
                 onFavoriteTap: () {
                   noteProvider.toggleFavorite(note.id);
@@ -158,9 +177,9 @@ class HomeScreen extends StatelessWidget {
                   type: NoteType.account,
                   onTap: () {
                     Navigator.pop(context);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('계정 정보 입력은 Phase 3에서 구현될 예정입니다'),
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => const AccountFormScreen(),
                       ),
                     );
                   },
@@ -172,9 +191,9 @@ class HomeScreen extends StatelessWidget {
                   type: NoteType.card,
                   onTap: () {
                     Navigator.pop(context);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('카드 정보 입력은 Phase 3에서 구현될 예정입니다'),
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => const CardFormScreen(),
                       ),
                     );
                   },
@@ -297,6 +316,150 @@ class HomeScreen extends StatelessWidget {
               child: const Text('저장'),
             ),
           ],
+        );
+      },
+    );
+  }
+}
+/// 메모 검색 Delegate
+///
+/// 제목으로 메모 검색 (내용은 암호화되어 검색 불가)
+class NoteSearchDelegate extends SearchDelegate<String> {
+  @override
+  String get searchFieldLabel => '메모 검색 (제목만)';
+
+  @override
+  List<Widget> buildActions(BuildContext context) {
+    return [
+      IconButton(
+        icon: const Icon(Icons.clear),
+        onPressed: () {
+          query = '';
+        },
+      ),
+    ];
+  }
+
+  @override
+  Widget buildLeading(BuildContext context) {
+    return IconButton(
+      icon: const Icon(Icons.arrow_back),
+      onPressed: () {
+        close(context, '');
+      },
+    );
+  }
+
+  @override
+  Widget buildResults(BuildContext context) {
+    return _buildSearchResults(context);
+  }
+
+  @override
+  Widget buildSuggestions(BuildContext context) {
+    return _buildSearchResults(context);
+  }
+
+  Widget _buildSearchResults(BuildContext context) {
+    if (query.trim().isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.search,
+              size: 80,
+              color: AppColors.onSurfaceVariant,
+            ),
+            SizedBox(height: AppTheme.spacing4),
+            Text(
+              '검색어를 입력하세요',
+              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                    color: AppColors.onSurfaceVariant,
+                  ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return Consumer<NoteProvider>(
+      builder: (context, noteProvider, child) {
+        // 제목으로 검색
+        final results = noteProvider.notes
+            .where((note) =>
+                note.title.toLowerCase().contains(query.toLowerCase()))
+            .toList();
+
+        if (results.isEmpty) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.search_off,
+                  size: 80,
+                  color: AppColors.onSurfaceVariant,
+                ),
+                SizedBox(height: AppTheme.spacing4),
+                Text(
+                  '검색 결과가 없습니다',
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                        color: AppColors.onSurfaceVariant,
+                      ),
+                ),
+                SizedBox(height: AppTheme.spacing2),
+                Text(
+                  '"$query"',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppColors.onSurfaceVariant,
+                        fontStyle: FontStyle.italic,
+                      ),
+                ),
+              ],
+            ),
+          );
+        }
+
+        return ListView.builder(
+          padding: EdgeInsets.symmetric(vertical: AppTheme.spacing2),
+          itemCount: results.length,
+          itemBuilder: (context, index) {
+            final note = results[index];
+            return NoteCard(
+              note: note,
+              onTap: () {
+                close(context, '');
+                // 메모 타입에 따라 적절한 편집 화면으로 이동
+                switch (note.type) {
+                  case NoteType.general:
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => NoteEditorScreen(note: note),
+                      ),
+                    );
+                    break;
+                  case NoteType.account:
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => AccountFormScreen(note: note),
+                      ),
+                    );
+                    break;
+                  case NoteType.card:
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => CardFormScreen(note: note),
+                      ),
+                    );
+                    break;
+                }
+              },
+              onFavoriteTap: () {
+                noteProvider.toggleFavorite(note.id);
+              },
+            );
+          },
         );
       },
     );
