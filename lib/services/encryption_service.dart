@@ -1,39 +1,55 @@
 import 'dart:convert';
 import 'dart:math';
-import 'dart:typed_data';
 import 'package:encrypt/encrypt.dart' as encrypt_lib;
+import 'package:flutter/foundation.dart';
 import 'secure_storage_service.dart';
-import 'recovery_key_service.dart';
 
 /// 암호화 서비스
 ///
 /// AES-256-GCM 암호화/복호화
-/// Phase 1: 하드코딩된 마스터 키 (테스트용)
-/// Phase 3: BIP39 복구 키 기반 마스터 키 생성
+/// 랜덤 256비트 마스터 키 기반 암호화
 class EncryptionService {
   static const String _masterKeyStorageKey = 'master_encryption_key';
   final SecureStorageService _storage = SecureStorageService();
 
+  /// 복구 키 → 랜덤 키 마이그레이션 (기존 사용자 데이터 보존)
+  ///
+  /// 복구 키 기반 마스터 키를 랜덤 키 스토리지로 이동
+  /// 한 번만 실행됨 (idempotent)
+  Future<void> _migrateRecoveryKeyToRandomKey() async {
+    try {
+      // 1. 복구 키 기반 마스터 키 존재 확인
+      final recoveryKey = await _storage.read('master_key_from_recovery');
+      if (recoveryKey == null) return;
+
+      // 2. 랜덤 키 스토리지로 이동
+      await _storage.write(_masterKeyStorageKey, recoveryKey);
+
+      // 3. 기존 복구 키 관련 데이터 삭제
+      await _storage.delete('master_key_from_recovery');
+      await _storage.delete('recovery_key_hash');
+
+      debugPrint('✅ 마이그레이션: 복구 키 → 랜덤 키 이동 완료');
+    } catch (e) {
+      debugPrint('⚠️ 마이그레이션 실패 (비치명적): $e');
+      // 신규 사용자는 복구 키가 없으므로 에러 무시
+    }
+  }
+
   /// 마스터 키 가져오기 또는 생성
   ///
-  /// Phase 1: 랜덤 256비트 키 생성
-  /// Phase 3: BIP39 복구 키에서 파생
+  /// 랜덤 256비트 키 사용
   Future<Uint8List> _getMasterKey() async {
-    final RecoveryKeyService recoveryService = RecoveryKeyService();
+    // 마이그레이션 실행 (최초 1회만)
+    await _migrateRecoveryKeyToRandomKey();
 
-    // 1순위: 복구 키 기반 마스터 키 (Phase 3)
-    final recoveryKey = await recoveryService.getMasterKey();
-    if (recoveryKey != null) {
-      return recoveryKey;
-    }
-
-    // 2순위: 저장된 랜덤 마스터 키 (Phase 1/2 호환성)
+    // 저장된 랜덤 마스터 키 확인
     final storedKey = await _storage.read(_masterKeyStorageKey);
     if (storedKey != null) {
       return base64Decode(storedKey);
     }
 
-    // 3순위: 새 랜덤 마스터 키 생성 (Phase 3 이후 발생하지 않음)
+    // 새 랜덤 마스터 키 생성 (신규 사용자)
     final random = Random.secure();
     final keyBytes = Uint8List(32); // 256비트
     for (int i = 0; i < 32; i++) {

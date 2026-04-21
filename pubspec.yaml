@@ -1,5 +1,5 @@
 name: secure_keep
-description: "BIP39 복구 키 기반 로컬 전용 보안 메모장"
+description: "로컬 전용 보안 메모장"
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -48,9 +48,6 @@ dependencies:
   crypto: ^3.0.3
   encrypt: ^5.0.3
   pointycastle: ^3.9.1
-
-  # BIP39 복구 키
-  bip39: ^1.0.6
 
   # 유틸리티
   uuid: ^4.5.3

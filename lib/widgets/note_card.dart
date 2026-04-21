@@ -51,17 +51,20 @@ class NoteCard extends StatelessWidget {
         ),
         child: Row(
           children: [
-            // 아이콘 프리픽스
+            // 아이콘 프리픽스 (타입별 이모지)
             Container(
+              width: 44,
+              height: 44,
               padding: EdgeInsets.all(AppTheme.spacing2),
               decoration: BoxDecoration(
                 color: AppColors.surfaceContainerLow,
                 borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
               ),
-              child: Icon(
-                Icons.lock,
-                size: 20,
-                color: AppColors.primary,
+              child: Center(
+                child: Text(
+                  note.type.icon,
+                  style: const TextStyle(fontSize: 20),
+                ),
               ),
             ),
 

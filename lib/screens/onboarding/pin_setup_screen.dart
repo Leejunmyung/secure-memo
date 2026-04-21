@@ -5,7 +5,7 @@ import '../../services/auth_service.dart';
 import '../../services/secure_storage_service.dart';
 import '../../utils/constants.dart';
 import '../../widgets/pin_input_field.dart';
-import 'recovery_key_screen.dart';
+import '../home/home_screen.dart';
 
 /// PIN 설정 화면
 ///
@@ -65,11 +65,11 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
       // 첫 실행 완료 표시
       await _storage.write(AppConstants.firstLaunchKey, 'false');
 
-      // 복구 키 화면으로 이동
+      // 홈 화면으로 이동
       if (mounted) {
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
-            builder: (_) => const RecoveryKeyScreen(),
+            builder: (_) => const HomeScreen(),
           ),
         );
       }

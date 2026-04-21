@@ -3,11 +3,10 @@ import '../../config/app_colors.dart';
 import '../../config/app_theme.dart';
 import '../../utils/constants.dart';
 import 'security_settings_screen.dart';
-import 'recovery_key_view_screen.dart';
 
 /// 설정 메인 화면
 ///
-/// 보안 설정, 복구 키, 앱 정보 등
+/// 보안 설정, 앱 정보 등
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
 
@@ -38,19 +37,6 @@ class SettingsScreen extends StatelessWidget {
                       Navigator.of(context).push(
                         MaterialPageRoute(
                           builder: (_) => const SecuritySettingsScreen(),
-                        ),
-                      );
-                    },
-                  ),
-                  _buildListTile(
-                    context,
-                    icon: Icons.key_outlined,
-                    title: '복구 키 보기',
-                    subtitle: '24단어 복구 키 확인',
-                    onTap: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => const RecoveryKeyViewScreen(),
                         ),
                       );
                     },
