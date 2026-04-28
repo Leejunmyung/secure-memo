@@ -8,6 +8,7 @@ import '../models/note_type.dart';
 
 /// 메모 카드 위젯
 ///
+/// Toss 스타일 디자인 적용
 /// 메모 목록에서 각 메모를 표시하는 카드
 class NoteCard extends StatelessWidget {
   final Note note;
@@ -25,124 +26,124 @@ class NoteCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // 날짜 포맷 (Renewal 스타일)
+    // 날짜 포맷
     final dateFormat = DateFormat('yyyy.MM.dd');
     final formattedDate = dateFormat.format(note.updatedAt);
+
+    // 카테고리 색상 가져오기
+    final categoryColors = AppColors.getCategoryColors(note.category);
+    final categoryBg = categoryColors['bg']!;
+    final categoryText = categoryColors['text']!;
 
     return GestureDetector(
       onTap: onTap,
       child: Container(
         margin: EdgeInsets.symmetric(
-          vertical: AppTheme.spacing2,
+          vertical: AppTheme.spacing2 / 2,
           horizontal: AppTheme.spacing4,
         ),
-        padding: EdgeInsets.all(AppTheme.spacing3),
+        padding: EdgeInsets.all(22),
         decoration: BoxDecoration(
           color: AppColors.surfaceContainerLowest,
-          borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
-          // Stitch subtle shadow
+          borderRadius: BorderRadius.circular(AppTheme.radiusLarge), // 28px
+          // Toss 스타일 섬세한 그림자
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFF29343A).withValues(alpha: 0.04),
-              blurRadius: 20,
-              offset: const Offset(0, 4),
+              color: const Color(0xFF000000).withValues(alpha: 0.055),
+              blurRadius: 16,
+              offset: const Offset(0, 2),
+            ),
+            BoxShadow(
+              color: const Color(0xFF000000).withValues(alpha: 0.04),
+              blurRadius: 0,
+              spreadRadius: 1,
             ),
           ],
         ),
-        child: Row(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // 아이콘 프리픽스 (타입별 이모지)
-            Container(
-              width: 44,
-              height: 44,
-              padding: EdgeInsets.all(AppTheme.spacing2),
-              decoration: BoxDecoration(
-                color: AppColors.surfaceContainerLow,
-                borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
-              ),
-              child: Center(
-                child: Text(
-                  note.type.icon,
-                  style: const TextStyle(fontSize: 20),
-                ),
-              ),
-            ),
-
-            SizedBox(width: AppTheme.spacing3),
-
-            // 제목 + 날짜 컬럼
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // 제목
-                  Text(
-                    note.title,
-                    style: AppTypography.titleMedium.copyWith(
-                      color: AppColors.onSurface,
-                      fontWeight: FontWeight.w600,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-
-                  SizedBox(height: AppTheme.spacing1 / 2),
-
-                  // 타입 + 날짜
-                  Row(
-                    children: [
-                      Text(
-                        note.type.displayName,
-                        style: AppTypography.labelSmall.copyWith(
-                          color: AppColors.onSurfaceVariant,
-                        ),
-                      ),
-                      SizedBox(width: AppTheme.spacing1),
-                      Text(
-                        '•',
-                        style: AppTypography.labelSmall.copyWith(
-                          color: AppColors.onSurfaceVariant,
-                        ),
-                      ),
-                      SizedBox(width: AppTheme.spacing1),
-                      Text(
-                        formattedDate,
-                        style: AppTypography.labelSmall.copyWith(
-                          color: AppColors.onSurfaceVariant,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-
-            // 우측 영역 (즐겨찾기 + chevron)
+            // 헤더: 카테고리 badge + 아이콘
             Row(
-              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                // 즐겨찾기 버튼
-                if (onFavoriteTap != null && note.isFavorite)
-                  Padding(
-                    padding: EdgeInsets.only(right: AppTheme.spacing1),
+                // 카테고리 badge
+                Container(
+                  height: 22,
+                  padding: EdgeInsets.symmetric(horizontal: 8),
+                  decoration: BoxDecoration(
+                    color: categoryBg,
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Center(
+                    child: Text(
+                      note.category,
+                      style: AppTypography.categoryTag.copyWith(
+                        color: categoryText,
+                      ),
+                    ),
+                  ),
+                ),
+
+                // 타입 아이콘 (우측 상단)
+                Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: AppColors.primaryLight,
+                    borderRadius: BorderRadius.circular(13),
+                  ),
+                  child: Center(
                     child: Icon(
-                      Icons.star,
+                      _getIconForType(note.type),
                       color: AppColors.primary,
                       size: 20,
                     ),
                   ),
-
-                // Navigation 인디케이터
-                Icon(
-                  Icons.chevron_right,
-                  size: 24,
-                  color: AppColors.onSurfaceVariant,
                 ),
               ],
+            ),
+
+            SizedBox(height: 10),
+
+            // 제목
+            Text(
+              note.title,
+              style: AppTypography.titleLarge.copyWith(
+                color: AppColors.onSurface,
+                fontSize: 17,
+                fontWeight: FontWeight.w700,
+                letterSpacing: -0.4,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+
+            SizedBox(height: 6),
+
+            // 날짜
+            Text(
+              formattedDate,
+              style: AppTypography.labelSmall.copyWith(
+                color: AppColors.onSurfaceTertiary, // t3
+                fontWeight: FontWeight.w500,
+              ),
             ),
           ],
         ),
       ),
     );
+  }
+
+  /// 메모 타입별 아이콘 반환
+  IconData _getIconForType(NoteType type) {
+    switch (type) {
+      case NoteType.general:
+        return Icons.note;
+      case NoteType.account:
+        return Icons.person;
+      case NoteType.card:
+        return Icons.credit_card;
+    }
   }
 }

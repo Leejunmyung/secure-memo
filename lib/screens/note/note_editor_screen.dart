@@ -25,6 +25,7 @@ class NoteEditorScreen extends StatefulWidget {
 class _NoteEditorScreenState extends State<NoteEditorScreen> {
   final _titleController = TextEditingController();
   final _contentController = TextEditingController();
+  final _categoryController = TextEditingController();
   bool _isLoading = false;
   bool _isLoadingContent = false;
 
@@ -40,6 +41,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
   void dispose() {
     _titleController.dispose();
     _contentController.dispose();
+    _categoryController.dispose();
     super.dispose();
   }
 
@@ -53,6 +55,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
 
       setState(() {
         _titleController.text = widget.note!.title;
+        _categoryController.text = widget.note!.category;
         _contentController.text = payload.content ?? '';
         _isLoadingContent = false;
       });
@@ -98,6 +101,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
           title: _titleController.text.trim(),
           payload: payload,
           type: NoteType.general,
+          category: _categoryController.text.trim(),
         );
       } else {
         // 기존 메모 업데이트
@@ -105,6 +109,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
           id: widget.note!.id,
           title: _titleController.text.trim(),
           payload: payload,
+          category: _categoryController.text.trim(),
         );
       }
 
@@ -295,6 +300,25 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                               hintText: '제목',
                               hintStyle: Theme.of(context).textTheme.headlineSmall?.copyWith(
                                     color: AppColors.onSurfaceVariant.withValues(alpha: 0.5),
+                                  ),
+                              border: InputBorder.none,
+                              contentPadding: EdgeInsets.zero,
+                            ),
+                            maxLines: 1,
+                          ),
+
+                          SizedBox(height: AppTheme.spacing2),
+
+                          // 카테고리
+                          TextField(
+                            controller: _categoryController,
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                  color: AppColors.onSurfaceVariant,
+                                ),
+                            decoration: InputDecoration(
+                              hintText: '카테고리 (선택사항, 입력하지 않으면 \'일반\')',
+                              hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: AppColors.onSurfaceVariant.withValues(alpha: 0.4),
                                   ),
                               border: InputBorder.none,
                               contentPadding: EdgeInsets.zero,

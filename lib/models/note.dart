@@ -44,6 +44,10 @@ class Note extends HiveObject {
   @HiveField(8)
   bool isFavorite;
 
+  /// 사용자 정의 카테고리 (입력하지 않으면 '일반')
+  @HiveField(9)
+  String category;
+
   Note({
     required this.id,
     required this.title,
@@ -54,6 +58,7 @@ class Note extends HiveObject {
     required this.createdAt,
     required this.updatedAt,
     this.isFavorite = false,
+    this.category = '일반',
   });
 
   /// 복사본 생성 (일부 필드 변경)
@@ -67,6 +72,7 @@ class Note extends HiveObject {
     DateTime? createdAt,
     DateTime? updatedAt,
     bool? isFavorite,
+    String? category,
   }) {
     return Note(
       id: id ?? this.id,
@@ -78,6 +84,7 @@ class Note extends HiveObject {
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       isFavorite: isFavorite ?? this.isFavorite,
+      category: category ?? this.category,
     );
   }
 

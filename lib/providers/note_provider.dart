@@ -67,10 +67,12 @@ class NoteProvider extends ChangeNotifier {
   /// @param title 제목 (평문)
   /// @param payload 암호화할 페이로드
   /// @param type 메모 타입
+  /// @param category 사용자 정의 카테고리 (입력하지 않으면 '일반')
   Future<void> createNote({
     required String title,
     required EncryptedPayload payload,
     required NoteType type,
+    String? category,
   }) async {
     try {
       _isLoading = true;
@@ -91,6 +93,7 @@ class NoteProvider extends ChangeNotifier {
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
         isFavorite: false,
+        category: category?.trim().isEmpty ?? true ? '일반' : category!.trim(),
       );
 
       // 저장
@@ -112,6 +115,7 @@ class NoteProvider extends ChangeNotifier {
     required String id,
     String? title,
     EncryptedPayload? payload,
+    String? category,
   }) async {
     try {
       _isLoading = true;
@@ -135,6 +139,12 @@ class NoteProvider extends ChangeNotifier {
         authTag = encrypted['authTag']!;
       }
 
+      // 카테고리 처리 (빈 문자열이면 '일반'으로)
+      String? finalCategory;
+      if (category != null) {
+        finalCategory = category.trim().isEmpty ? '일반' : category.trim();
+      }
+
       // 메모 업데이트
       final updatedNote = existingNote.copyWith(
         title: title ?? existingNote.title,
@@ -142,6 +152,7 @@ class NoteProvider extends ChangeNotifier {
         iv: iv,
         authTag: authTag,
         updatedAt: DateTime.now(),
+        category: finalCategory,
       );
 
       await _db.saveNote(updatedNote);
