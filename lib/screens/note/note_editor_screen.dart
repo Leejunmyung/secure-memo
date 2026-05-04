@@ -302,12 +302,28 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                                   fontWeight: FontWeight.w600,
                                 ),
                             decoration: InputDecoration(
+                              filled: true,
+                              fillColor: AppColors.surfaceContainerLow,
                               hintText: '메모 제목을 입력하세요',
                               hintStyle: Theme.of(context).textTheme.titleLarge?.copyWith(
                                     color: AppColors.onSurfaceVariant.withValues(alpha: 0.4),
                                   ),
-                              border: InputBorder.none,
-                              contentPadding: EdgeInsets.zero,
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide.none,
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide.none,
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide.none,
+                              ),
+                              contentPadding: EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 12,
+                              ),
                             ),
                             maxLines: 1,
                           ),
@@ -334,8 +350,22 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                               hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                     color: AppColors.onSurfaceVariant.withValues(alpha: 0.4),
                                   ),
-                              border: InputBorder.none,
-                              contentPadding: EdgeInsets.zero,
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide.none,
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide.none,
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide.none,
+                              ),
+                              contentPadding: EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 12,
+                              ),
                             ),
                             maxLines: 1,
                           ),
@@ -344,7 +374,7 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                           Wrap(
                             spacing: 8,
                             runSpacing: 8,
-                            children: ['금융', '법률', '개인', '의료', '신분'].map((cat) {
+                            children: ['금융', '계정', '개인', '의료', '신분'].map((cat) {
                               return InkWell(
                                 onTap: () {
                                   setState(() {
@@ -395,12 +425,26 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                                   height: 1.6,
                                 ),
                             decoration: InputDecoration(
-                              hintText: '자유롭게 내용을 입력하세요...\n\n계정 정보, 카드 번호, 비밀번호 등 어떤 내용이든 안전하게 암호화됩니다.',
+                              hintText: '자유롭게 내용을 입력하세요...',
                               hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                     color: AppColors.onSurfaceVariant.withValues(alpha: 0.4),
                                   ),
-                              border: InputBorder.none,
-                              contentPadding: EdgeInsets.zero,
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide.none,
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide.none,
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide.none,
+                              ),
+                              contentPadding: EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 12,
+                              ),
                             ),
                             maxLines: null,
                             minLines: 10,

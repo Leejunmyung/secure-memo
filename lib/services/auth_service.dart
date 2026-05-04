@@ -152,7 +152,7 @@ class AuthService {
     if (biometricAvailable && biometricEnabled) {
       try {
         final authenticated = await authenticateWithBiometric(
-          reason: 'SecureKeep 앱을 잠금 해제하려면 인증이 필요합니다',
+          reason: '메모르 앱을 잠금 해제하려면 인증이 필요합니다',
         );
         if (authenticated) return true;
       } catch (e) {

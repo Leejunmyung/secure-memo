@@ -8,8 +8,9 @@ import 'utils/constants.dart';
 import 'screens/onboarding/welcome_screen.dart';
 import 'screens/auth/unlock_screen.dart';
 import 'providers/note_provider.dart';
+import 'widgets/app_icon_widget.dart';
 
-/// SecureKeep 앱 진입점
+/// 메모르 (Memore) 앱 진입점
 ///
 /// Phase 1: 생체 인증, PIN 검증
 /// Phase 2: 메모 CRUD, AES-256-GCM 암호화
@@ -110,19 +111,7 @@ class _SplashScreenState extends State<SplashScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             // 앱 아이콘
-            Container(
-              width: 120,
-              height: 120,
-              decoration: BoxDecoration(
-                color: AppColors.primary,
-                borderRadius: BorderRadius.circular(AppTheme.radiusLarge * 3),
-              ),
-              child: Icon(
-                Icons.shield_outlined,
-                size: 64,
-                color: AppColors.onPrimary,
-              ),
-            ),
+            const AppIconWidget(size: 120),
 
             SizedBox(height: AppTheme.spacing4),
 

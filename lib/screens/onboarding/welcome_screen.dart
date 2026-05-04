@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../config/app_colors.dart';
 import '../../config/app_theme.dart';
 import '../../utils/constants.dart';
+import '../../widgets/app_icon_widget.dart';
 import 'pin_setup_screen.dart';
 
 /// 첫 실행 환영 화면
@@ -24,19 +25,7 @@ class WelcomeScreen extends StatelessWidget {
               const Spacer(),
 
               // 앱 아이콘
-              Container(
-                width: 120,
-                height: 120,
-                decoration: BoxDecoration(
-                  color: AppColors.primary,
-                  borderRadius: BorderRadius.circular(AppTheme.radiusLarge * 3),
-                ),
-                child: Icon(
-                  Icons.shield_outlined,
-                  size: 64,
-                  color: AppColors.onPrimary,
-                ),
-              ),
+              const AppIconWidget(size: 120),
 
               SizedBox(height: AppTheme.spacing6),
 

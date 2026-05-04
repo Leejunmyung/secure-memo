@@ -94,14 +94,14 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                             SizedBox(height: AppTheme.spacing1),
                             Text(
-                              '보안 기록',
+                              '나만의 메모',
                               style: AppTypography.headlineLarge.copyWith(
                                 color: AppColors.onSurface,
                               ),
                             ),
                             SizedBox(height: AppTheme.spacing1 / 2),
                             Text(
-                              '${noteProvider.notes.length}개 메모',
+                              '${noteProvider.notes.length}개 안전하게 보관 중',
                               style: AppTypography.bodyMedium.copyWith(
                                 color: AppColors.onSurfaceVariant,
                               ),
@@ -193,10 +193,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Container(
                       padding: EdgeInsets.only(
                         left: AppTheme.spacing4,
-                        top: AppTheme.spacing1,
+                        top: AppTheme.spacing4,
                         bottom: AppTheme.spacing1,
                       ),
-                      height: 52,
+                      height: 70,
                       child: ListView.builder(
                         scrollDirection: Axis.horizontal,
                         itemCount: _categories.length,
@@ -262,7 +262,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           Text(
                             _searchController.text.isNotEmpty || _selectedCategory != '전체'
                                 ? '검색 결과가 없습니다'
-                                : '메모가 없습니다',
+                                : '첫 메모를 만들어보세요',
                             style: AppTypography.bodyLarge.copyWith(
                               color: AppColors.onSurfaceVariant,
                             ),
@@ -270,7 +270,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           if (noteProvider.notes.isEmpty) ...[
                             SizedBox(height: AppTheme.spacing2),
                             Text(
-                              '새 메모를 추가하려면\n아래 + 버튼을 눌러주세요',
+                              '+ 버튼을 눌러 시작하세요',
                               style: AppTypography.bodyMedium.copyWith(
                                 color: AppColors.onSurfaceVariant.withValues(alpha: 0.7),
                               ),

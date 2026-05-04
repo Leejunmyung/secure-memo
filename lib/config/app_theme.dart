@@ -103,31 +103,31 @@ class AppTheme {
         selectedTileColor: AppColors.surfaceContainerHighest,
       ),
 
-      // Input Fields (Understated, bottom-only highlight)
+      // Input Fields (Consistent rounded corners)
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: AppColors.surfaceContainerLow,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(radiusMedium),
-          borderSide: BorderSide.none, // No 4-sided boxes
+          borderSide: BorderSide.none,
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(radiusMedium),
           borderSide: BorderSide.none,
         ),
-        focusedBorder: UnderlineInputBorder(
-          borderSide: BorderSide(
-            color: AppColors.primary,
-            width: 2,
-          ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(radiusMedium),
+          borderSide: BorderSide.none,
         ),
-        errorBorder: UnderlineInputBorder(
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(radiusMedium),
           borderSide: BorderSide(
             color: AppColors.error,
-            width: 2,
+            width: 1,
           ),
         ),
-        focusedErrorBorder: UnderlineInputBorder(
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(radiusMedium),
           borderSide: BorderSide(
             color: AppColors.error,
             width: 2,

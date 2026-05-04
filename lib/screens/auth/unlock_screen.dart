@@ -3,6 +3,7 @@ import '../../config/app_colors.dart';
 import '../../config/app_theme.dart';
 import '../../services/auth_service.dart';
 import '../../utils/constants.dart';
+import '../../widgets/app_icon_widget.dart';
 import 'pin_input_screen.dart';
 import '../home/home_screen.dart';
 
@@ -39,7 +40,7 @@ class _UnlockScreenState extends State<UnlockScreen> {
 
     if (biometricAvailable && biometricEnabled) {
       final authenticated = await _authService.authenticateWithBiometric(
-        reason: 'SecureKeep 앱을 잠금 해제하려면 인증이 필요합니다',
+        reason: '메모르 앱을 잠금 해제하려면 인증이 필요합니다',
       );
 
       if (authenticated && mounted) {
@@ -80,33 +81,13 @@ class _UnlockScreenState extends State<UnlockScreen> {
               const Spacer(flex: 2),
 
               // 앱 아이콘
-              Container(
-                width: 100,
-                height: 100,
-                decoration: BoxDecoration(
-                  gradient: AppColors.primaryGradient,
-                  borderRadius:
-                      BorderRadius.circular(AppTheme.radiusLarge * 3),
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppColors.primary.withValues(alpha: 0.2),
-                      blurRadius: 20,
-                      offset: const Offset(0, 8),
-                    ),
-                  ],
-                ),
-                child: Icon(
-                  Icons.lock_outline,
-                  size: 56,
-                  color: AppColors.onPrimary,
-                ),
-              ),
+              const AppIconWidget(size: 100),
 
               SizedBox(height: AppTheme.spacing6),
 
-              // Vault Locked 헤딩
+              // 앱 이름
               Text(
-                'Vault Locked',
+                AppConstants.appName,
                 style: Theme.of(context).textTheme.headlineLarge?.copyWith(
                       color: AppColors.onSurface,
                       fontWeight: FontWeight.bold,
@@ -115,9 +96,9 @@ class _UnlockScreenState extends State<UnlockScreen> {
 
               SizedBox(height: AppTheme.spacing2),
 
-              // 앱 이름
+              // 잠금 상태
               Text(
-                AppConstants.appName,
+                '잠금 해제',
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       color: AppColors.onSurfaceVariant,
                     ),
