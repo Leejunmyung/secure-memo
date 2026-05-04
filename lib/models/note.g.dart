@@ -26,7 +26,7 @@ class NoteAdapter extends TypeAdapter<Note> {
       createdAt: fields[6] as DateTime,
       updatedAt: fields[7] as DateTime,
       isFavorite: fields[8] as bool,
-      category: fields[9] as String? ?? '일반', // 기존 데이터 호환성
+      category: fields[9] as String,
     );
   }
 

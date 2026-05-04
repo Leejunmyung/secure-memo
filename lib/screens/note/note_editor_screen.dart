@@ -192,12 +192,42 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
     return Scaffold(
       backgroundColor: AppColors.surface,
       appBar: AppBar(
-        title: Text(widget.note == null ? '새 메모' : '메모 편집'),
+        backgroundColor: AppColors.surface,
+        elevation: 0,
+        centerTitle: true,
+        leading: InkWell(
+          onTap: () => Navigator.pop(context),
+          child: Padding(
+            padding: EdgeInsets.only(left: AppTheme.spacing2),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.chevron_left, color: AppColors.primary, size: 24),
+                Text(
+                  widget.note == null ? '취소' : '뒤로',
+                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                        color: AppColors.primary,
+                        fontWeight: FontWeight.w600,
+                      ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        leadingWidth: 90,
+        title: Text(
+          widget.note == null ? '새 메모' : '메모 편집',
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                color: AppColors.onSurface,
+                fontWeight: FontWeight.w700,
+              ),
+        ),
         actions: [
           if (widget.note != null)
             IconButton(
               icon: const Icon(Icons.delete_outline),
               onPressed: _deleteNote,
+              color: AppColors.error,
               tooltip: '삭제',
             ),
           if (_isLoading)
@@ -215,10 +245,27 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
               ),
             )
           else
-            IconButton(
-              icon: const Icon(Icons.check),
-              onPressed: _saveNote,
-              tooltip: '저장',
+            Padding(
+              padding: EdgeInsets.only(right: AppTheme.spacing3),
+              child: ElevatedButton(
+                onPressed: _saveNote,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primary,
+                  foregroundColor: Colors.white,
+                  elevation: 0,
+                  padding: EdgeInsets.symmetric(
+                    horizontal: AppTheme.spacing3,
+                    vertical: AppTheme.spacing2,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(11),
+                  ),
+                  textStyle: Theme.of(context).textTheme.labelMedium?.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
+                ),
+                child: const Text('저장'),
+              ),
             ),
         ],
       ),
@@ -231,57 +278,6 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
           : SafeArea(
               child: Column(
                 children: [
-                  // Encryption Status Header (Stitch 스타일)
-                  Container(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: AppTheme.spacing4,
-                      vertical: AppTheme.spacing3,
-                    ),
-                    decoration: BoxDecoration(
-                      color: AppColors.surfaceContainerLowest,
-                      border: Border(
-                        bottom: BorderSide(
-                          color: AppColors.ghostBorder,
-                          width: 1,
-                        ),
-                      ),
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.shield,
-                          size: 20,
-                          color: AppColors.primary,
-                        ),
-                        SizedBox(width: AppTheme.spacing2),
-                        Text(
-                          'End-to-End Encrypted',
-                          style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                                color: AppColors.primary,
-                                fontWeight: FontWeight.w600,
-                              ),
-                        ),
-                        const Spacer(),
-                        Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: AppTheme.spacing2,
-                            vertical: AppTheme.spacing1 / 2,
-                          ),
-                          decoration: BoxDecoration(
-                            color: AppColors.surfaceContainerLow,
-                            borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
-                          ),
-                          child: Text(
-                            '안전',
-                            style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                                  color: AppColors.primary,
-                                ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
                   // Editor Area
                   Expanded(
                     child: SingleChildScrollView(
@@ -289,35 +285,25 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // 제목
+                          // 제목 섹션
+                          Text(
+                            '제목',
+                            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                                  color: AppColors.onSurfaceVariant,
+                                  fontWeight: FontWeight.w700,
+                                  letterSpacing: 0.5,
+                                ),
+                          ),
+                          SizedBox(height: AppTheme.spacing2),
                           TextField(
                             controller: _titleController,
-                            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                            style: Theme.of(context).textTheme.titleLarge?.copyWith(
                                   color: AppColors.onSurface,
                                   fontWeight: FontWeight.w600,
                                 ),
                             decoration: InputDecoration(
-                              hintText: '제목',
-                              hintStyle: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                                    color: AppColors.onSurfaceVariant.withValues(alpha: 0.5),
-                                  ),
-                              border: InputBorder.none,
-                              contentPadding: EdgeInsets.zero,
-                            ),
-                            maxLines: 1,
-                          ),
-
-                          SizedBox(height: AppTheme.spacing2),
-
-                          // 카테고리
-                          TextField(
-                            controller: _categoryController,
-                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                  color: AppColors.onSurfaceVariant,
-                                ),
-                            decoration: InputDecoration(
-                              hintText: '카테고리 (선택사항, 입력하지 않으면 \'일반\')',
-                              hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              hintText: '메모 제목을 입력하세요',
+                              hintStyle: Theme.of(context).textTheme.titleLarge?.copyWith(
                                     color: AppColors.onSurfaceVariant.withValues(alpha: 0.4),
                                   ),
                               border: InputBorder.none,
@@ -326,9 +312,82 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                             maxLines: 1,
                           ),
 
-                          SizedBox(height: AppTheme.spacing3),
+                          SizedBox(height: AppTheme.spacing4),
 
-                          // 내용
+                          // 카테고리 섹션
+                          Text(
+                            '카테고리',
+                            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                                  color: AppColors.onSurfaceVariant,
+                                  fontWeight: FontWeight.w700,
+                                  letterSpacing: 0.5,
+                                ),
+                          ),
+                          SizedBox(height: AppTheme.spacing2),
+                          TextField(
+                            controller: _categoryController,
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                  color: AppColors.onSurface,
+                                ),
+                            decoration: InputDecoration(
+                              hintText: '입력하지 않으면 \'일반\'',
+                              hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: AppColors.onSurfaceVariant.withValues(alpha: 0.4),
+                                  ),
+                              border: InputBorder.none,
+                              contentPadding: EdgeInsets.zero,
+                            ),
+                            maxLines: 1,
+                          ),
+                          SizedBox(height: AppTheme.spacing2),
+                          // 추천 카테고리 칩
+                          Wrap(
+                            spacing: 8,
+                            runSpacing: 8,
+                            children: ['금융', '법률', '개인', '의료', '신분'].map((cat) {
+                              return InkWell(
+                                onTap: () {
+                                  setState(() {
+                                    _categoryController.text = cat;
+                                  });
+                                },
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 6,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: _categoryController.text == cat
+                                        ? AppColors.primary
+                                        : AppColors.surfaceContainerLow,
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: Text(
+                                    cat,
+                                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                                          color: _categoryController.text == cat
+                                              ? Colors.white
+                                              : AppColors.onSurfaceVariant,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                  ),
+                                ),
+                              );
+                            }).toList(),
+                          ),
+
+                          SizedBox(height: AppTheme.spacing4),
+
+                          // 내용 섹션
+                          Text(
+                            '내용',
+                            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                                  color: AppColors.onSurfaceVariant,
+                                  fontWeight: FontWeight.w700,
+                                  letterSpacing: 0.5,
+                                ),
+                          ),
+                          SizedBox(height: AppTheme.spacing2),
                           TextField(
                             controller: _contentController,
                             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
@@ -336,14 +395,15 @@ class _NoteEditorScreenState extends State<NoteEditorScreen> {
                                   height: 1.6,
                                 ),
                             decoration: InputDecoration(
-                              hintText: '내용을 입력하세요...',
+                              hintText: '자유롭게 내용을 입력하세요...\n\n계정 정보, 카드 번호, 비밀번호 등 어떤 내용이든 안전하게 암호화됩니다.',
                               hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                    color: AppColors.onSurfaceVariant.withValues(alpha: 0.5),
+                                    color: AppColors.onSurfaceVariant.withValues(alpha: 0.4),
                                   ),
                               border: InputBorder.none,
                               contentPadding: EdgeInsets.zero,
                             ),
                             maxLines: null,
+                            minLines: 10,
                             keyboardType: TextInputType.multiline,
                           ),
                         ],

@@ -16,7 +16,8 @@ class Note extends HiveObject {
   @HiveField(1)
   String title;
 
-  /// 메모 타입 (일반, 계정, 카드)
+  /// 메모 타입 (Deprecated: 모든 메모는 자유 포맷)
+  /// 기존 데이터 호환성을 위해 유지, 항상 general 사용
   @HiveField(2)
   NoteType type;
 
@@ -51,7 +52,7 @@ class Note extends HiveObject {
   Note({
     required this.id,
     required this.title,
-    required this.type,
+    this.type = NoteType.general, // 자유 포맷: 항상 general 사용
     required this.encryptedContent,
     required this.iv,
     required this.authTag,

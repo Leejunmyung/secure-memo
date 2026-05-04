@@ -66,12 +66,12 @@ class NoteProvider extends ChangeNotifier {
   ///
   /// @param title 제목 (평문)
   /// @param payload 암호화할 페이로드
-  /// @param type 메모 타입
+  /// @param type 메모 타입 (Deprecated: 항상 general 사용)
   /// @param category 사용자 정의 카테고리 (입력하지 않으면 '일반')
   Future<void> createNote({
     required String title,
     required EncryptedPayload payload,
-    required NoteType type,
+    NoteType type = NoteType.general, // 자유 포맷: 항상 general
     String? category,
   }) async {
     try {
